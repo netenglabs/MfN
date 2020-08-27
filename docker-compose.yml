@@ -1,0 +1,34 @@
+# TODO
+#   figure out where to export telegraf data to the local host
+
+version: "3"
+services:
+  prometheus:
+    container_name: mfn_prometheus
+    image: prom/prometheus
+    ports: 
+      - "9090:9090"
+    volumes:
+      - /home/$USER/MfN/prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: always
+  grafana:
+    container_name: mfn_grafana
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    links:
+      - prometheus
+    restart: always
+
+  telegraf:
+    container_name: mfn_telegraf
+    image: telegraf
+    network_mode: "host"
+    environment:
+      - MIBDIRS=/usr/share/snmp/mibs:/usr/share/snmp/mibs/StandardMibs:/usr/share/snmp/mibsJuniperMibs
+    volumes:
+      - /home/$USER/MfN/telegraf.conf:/etc/telegraf/telegraf.conf
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /home/$USER/MfN/mibs/StandardMibs:/usr/share/snmp/mibs/StandardMibs:ro
+      - /home/$USER/MfN/mibs/JuniperMibs:/usr/share/snmp/mibs/JuniperMibs:ro
+    restart: always
