@@ -1,34 +1,49 @@
 # TODO
 #   figure out where to export telegraf data to the local host
+#   do I need to have a networks statement?
+
+# what about sizing these VMs for performance?
+# do I want my own telegraf VM that has all the MIBs included?
+# where should I get the MIBs? Juniper?
+# Add more MIBs from other providers
+# where/how do we want to be persisting data
+# it's host networking, which telegraf requires, at least to connect to the VMs on the same host
+
 
 version: "3"
 services:
   prometheus:
     container_name: mfn_prometheus
     image: prom/prometheus
+    network_mode: "host"
     ports: 
       - "9090:9090"
     volumes:
-      - /home/$USER/MfN/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
     restart: always
   grafana:
     container_name: mfn_grafana
     image: grafana/grafana
+    network_mode: "host"
     ports:
       - "3000:3000"
-    links:
-      - prometheus
     restart: always
 
   telegraf:
     container_name: mfn_telegraf
     image: telegraf
     network_mode: "host"
+    ports:
+      - "9012:9012"
+    # networks:
+    #    - prometheus_backend
     environment:
       - MIBDIRS=/usr/share/snmp/mibs:/usr/share/snmp/mibs/StandardMibs:/usr/share/snmp/mibsJuniperMibs
     volumes:
-      - /home/$USER/MfN/telegraf.conf:/etc/telegraf/telegraf.conf
+      - ./telegraf.conf:/etc/telegraf/telegraf.conf
       - /var/run/docker.sock:/var/run/docker.sock
-      - /home/$USER/MfN/mibs/StandardMibs:/usr/share/snmp/mibs/StandardMibs:ro
-      - /home/$USER/MfN/mibs/JuniperMibs:/usr/share/snmp/mibs/JuniperMibs:ro
+      - ./mibs/StandardMibs:/usr/share/snmp/mibs/StandardMibs:ro
+      - ./mibs/JuniperMibs:/usr/share/snmp/mibs/JuniperMibs:ro
     restart: always
+networks:
+  prometheus_backend:

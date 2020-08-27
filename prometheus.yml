@@ -1,8 +1,19 @@
+# TODO
+# set the retension cycle
+# what should the scrape interval be for snmp? if it's 60 seconds, 
+#   will all the data be 60s old?
+
 global:
-  scrape_interval: "60s"
+  scrape_interval: "15s"
 
 scrape_configs:
   - job_name: 'prometheus'
     scrape_interval: "5s"
     static_configs:
       - targets: ['localhost:9090']
+  - job_name: snmp
+    scrape_interval: 5s
+    static_configs:
+      - targets: 
+        - localhost:9012
+
