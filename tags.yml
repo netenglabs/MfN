@@ -1,42 +1,26 @@
-# how do we want our tagging to work? 
-# -- this is just tagging for device, other attributes come later
-# how do we want to use it
-# suzieq
-# * each device is in a namespace
-# * namespaces can be grouped together
-# * the easiest way is by regex, but could also list them out
-# * namespaces can be in many groups
-# * devices can have a list of roles
-# do i want an idea of how roles are related to each other?
-# * ie containers
-# * maybe we don't need that yet, do we?
-# can we get away with role_group as well as namespace_group
-# how do we want to define these?
-# we could have each device have to list it's namespace and groups
-#  that's how suzieq and MfN will intgest, but it's not how I'd like 
-#   to describe them if I can help it
-# how do I want to go from this description to something useful?
-#  just create a static output? but with regex I don't know what will match the regex
-
-# describe here, then have a script that edits suzieq config based on this?
-#  I think this is the only trick part of the problem, how do we go from this simple setup to using it?
-
-# I want to be able to filter by namespace (or namespace_group) and by role (or role_group)
-
 
 namespaces:
    junos: ['vqfx*', 'srv*']
 
 namespace_group:
    new_york: ['junos', 'fooey']
+   east_cost_us : ['new_york', 'virginia']
 
-roles:
+device_roles:
    leaf: 
    spine:
    core:
    edge:
    srv:
 
-role_group:
+device_role_group:
    datacenter: ['leaf', 'spine', 'core', 'edge']
+# or the ansible way
+device_roles:
+   datacenter:
+      children: ['leaf', 'spine', 'core', 'edge']
 
+
+interface_roles:
+#based on interface description
+# probably based based on a database
